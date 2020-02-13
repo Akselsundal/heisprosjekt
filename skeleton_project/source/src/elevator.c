@@ -3,6 +3,46 @@
 #include "elevator.h"
 #include "hardware.h"
 
+void run_elevator(){
+    state_t state = boot;
+    
+    while(1){
+        switch(state){
+            case boot:
+            hardware_init();
+            
+            state = sleep;
+            break;
+            case sleep:
+            break;
+            case up:
+            break;
+            case down:
+            break;
+            case doors_open:
+            break;
+            case obstruction:
+            break;
+            case stop:
+            break;
+            case error:
+            break;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 void run_example_program(){
     // Example program
     int error = hardware_init();

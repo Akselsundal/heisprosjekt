@@ -28,6 +28,9 @@ void parse_argvs(char argc, char **argv){
     if (!strcmp(argv[1], "example")){
         run_example_program();
     }
+    if (!strcmp(argv[1], "run")){
+        run_elevator();
+    }
 
 
 }
