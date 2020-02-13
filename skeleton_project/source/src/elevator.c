@@ -2,21 +2,36 @@
 #include <stdlib.h>
 #include "elevator.h"
 #include "hardware.h"
+int elevator_boot(){
+  hardware_command_movement(HARDWARE_MOVEMENT_UP);
+  while(1){
+    for (int i = 1 ; i<5 ; i++){
+      if (hardware_read_floor_sensor(i)) {
+        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
+        return i;
+      }
+
+
+    }
+  }
+}
+
 
 void run_elevator(){
-    state_t state = boot;
-    
+    hardware_init();
+    state = sleep;
+    elevator_boot();
+
     while(1){
         switch(state){
-            case boot:
-            hardware_init();
-            
-            state = sleep;
-            break;
+
+
             case sleep:
             break;
+
             case up:
             break;
+
             case down:
             break;
             case doors_open:
