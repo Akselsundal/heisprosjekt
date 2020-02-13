@@ -15,17 +15,17 @@ int elevator_boot(){
     }
   }
 }
-
 void run_elevator(){
     elevator_boot();
     hardware_init();
-    state = sleep;
-
+    state_t state = sleep;
     while(1){
         switch(state){
             case sleep:
+            // Sleep
             break;
             case up:
+
             break;
             case down:
             break;
