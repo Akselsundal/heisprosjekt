@@ -15,6 +15,7 @@ typedef enum {
 
 int elevator_boot();
 
+void elevator_run();
 void run_example_program();
 
 

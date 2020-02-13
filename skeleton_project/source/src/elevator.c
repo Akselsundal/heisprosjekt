@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "elevator.h"
+#include <signal.h>
 #include "hardware.h"
 int elevator_boot(){
   hardware_command_movement(HARDWARE_MOVEMENT_UP);
@@ -25,7 +25,6 @@ void run_elevator(){
     while(1){
         switch(state){
 
-
             case sleep:
             break;
 
@@ -48,23 +47,19 @@ void run_elevator(){
 
 
 
+static void clear_all_order_lights();
 
-
-
-
-
-
-
-
-
+static void sigint_handler(int sig);
 
 void run_example_program(){
-    // Example program
     int error = hardware_init();
     if(error != 0){
         fprintf(stderr, "Unable to initialize hardware\n");
         exit(1);
     }
+
+
+    signal(SIGINT, sigint_handler);
 
     printf("=== Example Program ===\n");
     printf("Press the stop button on the elevator panel to exit\n");
@@ -83,5 +78,7 @@ void run_example_program(){
         if(hardware_read_floor_sensor(HARDWARE_NUMBER_OF_FLOORS - 1)){
             hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
         }
+
+
     }
 }
