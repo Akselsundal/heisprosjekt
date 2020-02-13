@@ -2,42 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "hardware.h"
-#include "elevator.h"
-
-
-void elevator_run(){
-    state_t state = boot;
-    
-    while(1){
-        switch(state){
-            case boot:
-            hardware_init();
-            
-            state = sleep;
-            break;
-            case sleep:
-            break;
-            case up:
-            break;
-            case down:
-            break;
-            case doors_open:
-            break;
-            case obstruction:
-            break;
-            case stop:
-            break;
-            case error:
-            break;
-        }
-    }
-}
-
-
-
-static void clear_all_order_lights();
-
-static void sigint_handler(int sig);
+#include "example.h"
 
 void run_example_program(){
     int error = hardware_init();
