@@ -1,4 +1,4 @@
-SOURCES := main.c
+SOURCES := main.c utilities.c boot.c
 
 SOURCE_DIR := source/src
 INC_DIR := source/inc

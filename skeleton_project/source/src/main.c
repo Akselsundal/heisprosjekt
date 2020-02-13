@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include "hardware.h"
+#include "boot.h"
 
 static void clear_all_order_lights(){
     HardwareOrder order_types[3] = {
@@ -32,6 +33,7 @@ int main(){
         exit(1);
     }
 
+
     signal(SIGINT, sigint_handler);
 
     printf("=== Example Program ===\n");
@@ -44,6 +46,7 @@ int main(){
             hardware_command_movement(HARDWARE_MOVEMENT_STOP);
             break;
         }
+	printf("Floor number: %i\n", set());
 
         if(hardware_read_floor_sensor(0)){
             hardware_command_movement(HARDWARE_MOVEMENT_UP);
