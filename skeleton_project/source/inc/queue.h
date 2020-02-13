@@ -5,7 +5,11 @@ typedef enum {
     first = 1, second, thrid, forth
 } floor_t;
 
-floor_t floor = first; 
+floor_t queue_curr_floor;
+
+
+
+
 
 int queue_add_request();
 
