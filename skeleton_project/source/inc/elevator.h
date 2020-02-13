@@ -13,6 +13,7 @@ typedef enum {
 } state_t;
 
 
+elevator_boot();
 
 void run_example_program();
 
