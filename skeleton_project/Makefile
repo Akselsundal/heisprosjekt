@@ -1,12 +1,11 @@
-SOURCES := main.c utilities.c boot.c
-
 SOURCE_DIR := source/src
 INC_DIR := source/inc
 HW_INC_DIR := source/driver
 BUILD_DIR := build
 
+SOURCES := main.c elevator.c example.c queue.c utilities.c
 
-OBJ := $(patsubst %.c,$(BUILD_DIR)/%.o,$(SOURCES))
+OBJ := $(addprefix $(BUILD_DIR)/, $(SOURCES:%.c=%.o))
 
 DRIVER_ARCHIVE := $(BUILD_DIR)/libdriver.a
 DRIVER_SOURCE := hardware.c io.c

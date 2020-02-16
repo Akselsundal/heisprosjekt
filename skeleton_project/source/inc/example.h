@@ -1,6 +1,8 @@
 
+#ifndef EXAMPLE_H
+#define EXAMPLE_H
 
-void run_example_program();
-static void clear_all_order_lights();
+int run_example();
 
-static void sigint_handler(int sig);
+#endif // EXAMPLE_H
+
