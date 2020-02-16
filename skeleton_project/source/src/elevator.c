@@ -8,9 +8,11 @@
 static void delay_ms(int number_of_ms);
 
 void elevator_run(){
+
     hardware_init();
-    size_t allocated = 0;
-    queue_requests = (request_t *) malloc(allocated);
+  
+
+    queue_requests = (request_t *) malloc(0);
     queue_length = 0;
     state_t state = sleep;
     int current_floor = elevator_get_curr_floor();
@@ -23,20 +25,9 @@ void elevator_run(){
       switch(state){
 
           case sleep:
-          if (queue_length > -1){
-            if(queue_get_next_floor(current_floor, none) > current_floor){
-              elevator_transition_state(&state, up, "Switched from sleep to up state.");
-            }
-            else if (queue_get_next_floor(current_floor, none) < current_floor){
-              elevator_transition_state(&state, down, "Switched from sleep to down state.");
-            }
-            else{
-              elevator_transition_state(&state, error, "");
-              printf("Error: Queue module concluded to go to the floor the ");
-              printf("elevator already is on.\n");
-            }
-          }
+          transition_from_sleep(&state, current_floor);   // state is a ptr and is updated in the function
           break;
+
           case up:
           current_floor = elevator_get_curr_floor();
         //  if(current_floor != -1) last_floor = current_floor;
@@ -91,10 +82,30 @@ int elevator_transition_state(state_t *p_now_state, state_t to_state, char *msg)
   }
 }
 
+static void transition_from_sleep(state_t *p_state, int current_floor){
+  if (queue_length > -1){
+    if(queue_get_next_floor(current_floor, none) > current_floor){
+      elevator_transition_state(p_state, up, "Switched from sleep to up state.");
+    }
+    else if (queue_get_next_floor(current_floor, none) < current_floor){
+      elevator_transition_state(p_state, down, "Switched from sleep to down state.");
+    }
+    else{
+      elevator_transition_state(p_state, error, "");
+      printf("Error: Queue module concluded to go to the floor the ");
+      printf("elevator already is on.\n");
+    }
+  }
+}
+
+static void transtition_from_up(state_t state){
+
+}
+
 
 static void delay_ms(int number_of_ms){
-  __time_t *time_now;
-  __time_t *next_time;
+  time_t *time_now;
+  time_t *next_time;
   time(time_now);
   while (*next_time < *time_now + number_of_ms){
     time(next_time);

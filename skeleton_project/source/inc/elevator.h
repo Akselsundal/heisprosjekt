@@ -12,8 +12,6 @@ typedef enum {
 } state_t;
 
 
-elevator_boot();
-
 void elevator_run();
 
 int elevator_get_curr_floor();

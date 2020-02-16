@@ -1,11 +1,43 @@
 #include "queue.h"
+#include "elevator.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 
-int queue_get_next_floor(int current_floor, direction_t dir){
-  return 2;
+int queue_get_next_floor(int current_floor, state_t state){
+  request_t *best_request = queue_requests; // First element in queue_requests - iterate over all elements to find best option.
+
+  // Elevator does not priorotize orders from inside; if button was corretly pressed by the passenger from the outside,
+  // the direction of the elevator and the passenger's wish will coincide.
+  for (int i = 0; i < queue_length; i++){
+    if (state == up && (best_request + i)->floor < best_request->floor){
+        best_request = (best_request + i);
+
+    }
+    else if (state == down && (best_request + i)->floor > best_request->floor){
+        best_request = best_request + i;
+    }
+  }
+
+
+
+
+
+
+
+  for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
+    for (HardwareOrder order = HARDWARE_ORDER_UP; order < HARDWARE_ORDER_DOWN + 1; order++){
+      
+      if (current_floor < best_request->floor && best_request->order_type == HARDWARE_ORDER_UP){
+      
+        best_request->floor = f;
+        best_request->order_type = ...;
+     
+      }
+    }
+  }
+
 
 }
 
@@ -17,12 +49,35 @@ void queue_add_request(){
       if (hardware_read_order(f, order)){
         req.floor = f;
         req.order_type = order;
-        queue_length++;   // realloc fungerer kun for partall queue_length... Spør studass om dette.
+        //queue_length++;   // realloc fungerer kun for partall queue_length... Spør studass om dette.
         queue_requests = (request_t*)realloc(queue_requests, (sizeof(request_t) * ++queue_length));
         queue_requests[queue_length] = req;
-        printf("Added new element to queue:\n");
-        printf("Floor: %i\nHardwareOrder: %i\nqueue_length: %i\n", req.floor, req.order_type, queue_length);
+        print_request(&req);
       }
     }
   }
+}
+
+static void print_request(const request_t *req){
+  switch(req->order_type){
+    case HARDWARE_ORDER_UP:
+    printf("Floor: %i\nOrder type: up\n", req->floor);
+    break;
+    case HARDWARE_ORDER_INSIDE:
+    printf("Floor: %i\nOrder type: inside\n", req->floor);
+    break;
+    case HARDWARE_ORDER_DOWN:
+    printf("Floor: %i\nOrder type: down\n", req->floor);
+  }
+}
+
+static void print_all_requests(){
+  printf("========================================\n\n");
+  printf("Printing all requests:\n\n");
+  for (int i = 0; i < queue_length; i++){
+    printf("Request number %i:\n", i);
+    print_request(queue_requests + i);
+    printf("\n");
+  }
+  printf("\n========================================\n\n");
 }
