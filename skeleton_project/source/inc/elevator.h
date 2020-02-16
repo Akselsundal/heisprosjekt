@@ -2,19 +2,20 @@
 #define ELEVATOR_H
 
 typedef enum {
-    sleep,
-    up,
-    down,
-    doors_open,
-    obstruction,
-    stop,
-    error
+    BOOT,
+    SLEEP,
+    UP,
+    DOWN,
+    DOORS_OPEN,
+    OBSTRUCTION,
+    STOP,
+    ERROR
 } state_t;
 
 
 void elevator_run();
 
-int elevator_get_curr_floor();
+void elevator_update_curr_floor(int *last_floor)
 
 
 // Doxygen

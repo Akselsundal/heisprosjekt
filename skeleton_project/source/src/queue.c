@@ -11,34 +11,14 @@ int queue_get_next_floor(int current_floor, state_t state){
   // Elevator does not priorotize orders from inside; if button was corretly pressed by the passenger from the outside,
   // the direction of the elevator and the passenger's wish will coincide.
   for (int i = 0; i < queue_length; i++){
-    if (state == up && (best_request + i)->floor < best_request->floor){
+    if (state == UP && (best_request + i)->floor < best_request->floor){
         best_request = (best_request + i);
 
     }
-    else if (state == down && (best_request + i)->floor > best_request->floor){
+    else if (state == DOWN && (best_request + i)->floor > best_request->floor){
         best_request = best_request + i;
     }
   }
-
-
-
-
-
-
-
-  for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
-    for (HardwareOrder order = HARDWARE_ORDER_UP; order < HARDWARE_ORDER_DOWN + 1; order++){
-      
-      if (current_floor < best_request->floor && best_request->order_type == HARDWARE_ORDER_UP){
-      
-        best_request->floor = f;
-        best_request->order_type = ...;
-     
-      }
-    }
-  }
-
-
 }
 
 
