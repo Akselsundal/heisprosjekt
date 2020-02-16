@@ -1,72 +1,102 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "elevator.h"
 #include "hardware.h"
+#include "queue.h"
 
-void run_elevator(){
-    state_t state = boot;
-    
+static void delay_ms(int number_of_ms);
+
+void elevator_run(){
+    hardware_init();
+    size_t allocated = 0;
+    queue_requests = (request_t *) malloc(allocated);
+    queue_length = 0;
+    state_t state = sleep;
+    int current_floor = elevator_get_curr_floor();
+
+    delay_ms(10000);
+  //  int last_floor = current_floor;
     while(1){
-        switch(state){
-            case boot:
-            hardware_init();
-            
-            state = sleep;
-            break;
-            case sleep:
-            break;
-            case up:
-            break;
-            case down:
-            break;
-            case doors_open:
-            break;
-            case obstruction:
-            break;
-            case stop:
-            break;
-            case error:
-            break;
+
+
+      switch(state){
+
+          case sleep:
+          if (queue_length > -1){
+            if(queue_get_next_floor(current_floor, none) > current_floor){
+              elevator_transition_state(&state, up, "Switched from sleep to up state.");
+            }
+            else if (queue_get_next_floor(current_floor, none) < current_floor){
+              elevator_transition_state(&state, down, "Switched from sleep to down state.");
+            }
+            else{
+              elevator_transition_state(&state, error, "");
+              printf("Error: Queue module concluded to go to the floor the ");
+              printf("elevator already is on.\n");
+            }
+          }
+          break;
+          case up:
+          current_floor = elevator_get_curr_floor();
+        //  if(current_floor != -1) last_floor = current_floor;
+          //printf("Last floor: %i\n", last_floor);
+
+          queue_add_request();
+
+
+          break;
+          case down:
+          current_floor = elevator_get_curr_floor();
+          break;
+          case doors_open:
+          break;
+          case obstruction:
+          break;
+          case stop:
+          break;
+          case error:
+          break;
         }
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-void run_example_program(){
-    // Example program
-    int error = hardware_init();
-    if(error != 0){
-        fprintf(stderr, "Unable to initialize hardware\n");
-        exit(1);
+int elevator_get_curr_floor(){
+  for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
+    if (hardware_read_floor_sensor(i)){
+      return i;
     }
+  }
+  return -1;
+}
 
-    printf("=== Example Program ===\n");
-    printf("Press the stop button on the elevator panel to exit\n");
+int elevator_transition_state(state_t *p_now_state, state_t to_state, char *msg){
+  int trans_from_sleep      = *p_now_state == sleep && (to_state == up || to_state == down || to_state == stop);
+  int trans_from_up         = *p_now_state == up && (to_state == doors_open || to_state == stop);
+  int trans_from_down       = *p_now_state == down && (to_state == doors_open || to_state == stop);
+  int trans_from_doors_open = *p_now_state == doors_open && (to_state == sleep || to_state == stop
+                               || to_state == up || to_state == down);
+  int trans_from_stop       = *p_now_state == stop && to_state == error;
+  int trans_from_error      = *p_now_state == error && to_state == sleep;
 
-    hardware_command_movement(HARDWARE_MOVEMENT_UP);
+  if (trans_from_sleep || trans_from_up || trans_from_down || trans_from_doors_open || trans_from_stop || trans_from_error){
+    *p_now_state = to_state;
+    printf("%s\n", msg);
+    return 0;
+  }
+  else {
+    *p_now_state = error;
+    printf("Error: Incorrect transitions of states!\n");
+    return -1;
+  }
+}
 
-    while(1){
-        if(hardware_read_stop_signal()){
-            hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-            break;
-        }
 
-        if(hardware_read_floor_sensor(0)){
-            hardware_command_movement(HARDWARE_MOVEMENT_UP);
-        }
-        if(hardware_read_floor_sensor(HARDWARE_NUMBER_OF_FLOORS - 1)){
-            hardware_command_movement(HARDWARE_MOVEMENT_DOWN);
-        }
-    }
+static void delay_ms(int number_of_ms){
+  __time_t *time_now;
+  __time_t *next_time;
+  time(time_now);
+  while (*next_time < *time_now + number_of_ms){
+    time(next_time);
+  }
 }
