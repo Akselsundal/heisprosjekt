@@ -15,7 +15,8 @@ request_t *queue_requests;
 int queue_length;
 
 
-int queue_get_next_floor(int current_floor, state_t state);
+int queue_get_next_floor(int current_floor, state_t state, request_t *request);
 void queue_add_request();
+void queue_remove_request();
 
 #endif // QUEUE_H

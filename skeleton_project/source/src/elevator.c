@@ -105,8 +105,3 @@ static void transition_from_sleep(state_t *p_state, int current_floor){
   }
 }
 
-
-
-static void delay_ms(int number_of_ms){
-  return;
-}
