@@ -13,7 +13,6 @@ int main(int argc, char **argv){
   parse_argvs(argc, argv);
 
   elevator_run();
-
 }
 
 

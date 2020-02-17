@@ -1,24 +1,21 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-
 #include "hardware.h"
+#include "elevator.h"
 
-int queue_length;
 
 typedef struct {
   int floor;
   HardwareOrder order_type;
 } request_t;
 
+
 request_t *queue_requests;
+int queue_length;
 
-typedef enum {
-  dir_up, dir_down, none
-} direction_t;
 
-int queue_get_next_floor(int current_floor, direction_t dir);
+int queue_get_next_floor(int current_floor, state_t state);
 void queue_add_request();
 
 #endif // QUEUE_H
-

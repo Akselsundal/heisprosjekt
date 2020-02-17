@@ -15,7 +15,7 @@ typedef enum {
 
 void elevator_run();
 
-void elevator_update_curr_floor(int *last_floor)
+void elevator_update_curr_floor(int *last_floor);
 
 
 // Doxygen
