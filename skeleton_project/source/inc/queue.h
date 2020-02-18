@@ -20,5 +20,6 @@ void queue_init();
 int queue_get_next_floor(int current_floor, state_t state, request_t *request);
 void queue_add_request();
 void queue_remove_request();
+void queue_flush();
 
 #endif // QUEUE_H

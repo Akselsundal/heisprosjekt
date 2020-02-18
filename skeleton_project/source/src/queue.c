@@ -66,6 +66,9 @@ int queue_add_request(){
       if (hardware_read_order(f, order) && !queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order].active){
         queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order].active = 1;
         queue_active_reqs++;
+
+        printf("A request was added:\n")
+        print_request(&queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order]);
         return 0;  // Success
       }
     }
@@ -73,18 +76,25 @@ int queue_add_request(){
   return -1;       // Failure
 }
 
-void queue_remove_request(request_t *req){
+void queue_remove_requests_on_floor(int arrived_floor){
   if (!queue_active_reqs) return -1;
   
-  printf("Attempting to remove request:\n");
-  print_request(req);
+  printf("Attempting to remove request on floor %i:\n", arrived_floor);
 
-  for (int i = 0; i < queue_active_reqs; i++){
-    if ((queue_requests + i)->floor == req->floor && (queue_requests + i)->order_type == req->order_type){
-      
+  for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
+    if (queue_requests[i * (HARDWARE_NUMBER_OF_FLOORS - 1)].floor == arrived_floor){
+      // Set all requests on arrived floor to inactive
+      for (int j = 0; j < 3; j++){ // Magic number
+        queue_requests[i + j].active = 0;
+      }
     }
   }
+}
 
+void queue_flush(){
+  for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
+    queue_remove_requests_on_floor(f);
+  }
 }
 
 
