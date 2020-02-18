@@ -17,7 +17,8 @@ int main(int argc, char **argv){
 
 
 static void parse_argvs(int argc, char **argv){
-  if (argc < 2) return;// Return to main() for normal program
+  if (argc < 2) return; // Normal program
+
   else if (!strcmp(argv[1], "--help")) {
     printf("The following parameters are valid:\n \
             'example' \t\t runs example program\n \

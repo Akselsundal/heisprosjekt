@@ -3,77 +3,83 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 
 
 static void print_request(const request_t *req);
 static void print_all_requests();
+static int compare_requests(const request_t req1, const request_t req2);
 
-int queue_get_next_floor(int current_floor, state_t state, request_t *request){
-  if (!queue_length) return -1;  // No elements in queue
+
+void queue_init(){
+  queue_active_reqs = 0;
   
-  request = queue_requests; // First element in queue_requests - iterate over all elements to find best option.
-
-  // Elevator does not priorotize orders from inside; if button was corretly pressed by the passenger from the outside,
-  // the direction of the elevator and the passenger's wish will coincide.
-  for (int i = 0; i < queue_length; i++){
-    if (state == UP && (queue_requests + i)->floor > current_floor && (queue_requests + i)->floor < request->floor){
-        request = queue_requests + i;
+  request_t req;
+  req.active = 0;
+  for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
+    for (HardwareOrder order = HARDWARE_ORDER_UP; order < HARDWARE_ORDER_DOWN + 1; order++){
+      req.floor = f;
+      req.order_type = order;
+      queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order] = req;
     }
-    else if (state == DOWN && (queue_requests + i)->floor < current_floor && (request + i)->floor > request->floor){
-        request = queue_requests + i;
-    }
-    // else request remains the first element
+  }
+}
 
+int queue_get_next_floor(int current_floor, state_t state){
+  if (!queue_active_reqs) return -1;  // No elements in queue
+  
+  request_t request;
+
+  // Identify first active element in queue
+  int i = 0;
+  for (; i < NUMBER_OF_POSSIBLE_REQUESTS; i++){
+    if (queue_requests[i].active){
+      request = queue_requests[i];
+      break;
+    }
+  }
+
+  // Determine best active element in queue
+  for (int j = i + 1; j < NUMBER_OF_POSSIBLE_REQUESTS; j++){
+    if (queue_requests[j].active){
+      if (state == UP queue_requests[i].order_type == HARDWARE_ORDER_UP 
+          && queue_requests[j].floor > current_floor && queue_requests[j].floor < request.floor){
+        
+        request = queue_requests[j];
+      
+      }
+      else if (state == DOWN && queue_requests[i].order_type == HARDWARE_ORDER_DOWN
+          && queue_requests[j].floor < current_floor && queue_requests[j].floor > request.floor){
+        
+        request = queue_requests[j];
+      
+      }
+    }
+  }
   print_all_requests();
   return 0;
 }
 
 
-void queue_add_request(){
-  request_t req;
-  // Add correct request to req
+int queue_add_request(){
   for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
     for (HardwareOrder order = HARDWARE_ORDER_UP; order < HARDWARE_ORDER_DOWN + 1; order++){
-      if (hardware_read_order(f, order)){
-        req.floor = f;
-        req.order_type = order;
+      if (hardware_read_order(f, order) && !queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order].active){
+        queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order].active = 1;
+        queue_active_reqs++;
+        return 0;  // Success
       }
     }
   }
-
-  // If queue is empty, add the request
-  if (!queue_length){
-    queue_requests = (request_t*)realloc(queue_requests, (sizeof(request_t) * ++queue_length));
-    queue_requests[queue_length] = req;
-    printf("A new request was added:\n");
-    print_request(&req);
-  }
-  else{ // The queue is not empty
-  // Check if the request already exists in queue_requests
-    for (int i = 0; i < queue_length; i++){
-      if (queue_requests[i].floor == req.floor && queue_requests[i].order_type == req.order_type){
-        break;
-        if (i == queue_length - 1){
-          // Add request to queue (realloc does not seem to work)
-          
-          queue_requests = (request_t*)realloc(queue_requests, (sizeof(request_t) * ++queue_length));
-          queue_requests[queue_length] = req;
-          printf("A new request was added:\n");
-          print_request(&req);
-        }
-      }
-    }
-  }
+  return -1;       // Failure
 }
 
 void queue_remove_request(request_t *req){
-  if (!queue_length) return -1;
+  if (!queue_active_reqs) return -1;
   
   printf("Attempting to remove request:\n");
   print_request(req);
 
-  for (int i = 0; i < queue_length; i++){
+  for (int i = 0; i < queue_active_reqs; i++){
     if ((queue_requests + i)->floor == req->floor && (queue_requests + i)->order_type == req->order_type){
       
     }
@@ -98,10 +104,15 @@ static void print_request(const request_t *req){
 static void print_all_requests(){
   printf("========================================\n\n");
   printf("Printing all requests:\n\n");
-  for (int i = 0; i < queue_length; i++){
+  for (int i = 0; i < queue_active_reqs; i++){
     printf("Request number %i:\n", i);
     print_request(queue_requests + i);
     printf("\n");
   }
   printf("\n========================================\n\n");
+}
+
+static int compare_requests(const request_t req1, const request_t req2){
+  if (req1.active == req2.active && req1.floor == req2.floor && req1.order_type == req2.order_type) return 1;
+  return 0;
 }

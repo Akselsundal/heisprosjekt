@@ -12,12 +12,11 @@ static void transition_from_sleep(state_t *p_state, int current_floor);
 void elevator_run(){
 
     hardware_init();
-
+    queue_init();
+    
     state_t state = BOOT;
-    int current_floor = -1;  // Initially, unknown and invalid floor.
+    int current_floor = -1;  // Initially, unknown floor.
 
-    queue_requests = (request_t *) malloc(0);   // Initilize dynamic queue array
-    queue_length = 0;
 
     delay_ms(10000);
     while(1){
@@ -90,7 +89,7 @@ int elevator_transition_state(state_t *p_now_state, state_t to_state, char *msg)
 }
 
 static void transition_from_sleep(state_t *p_state, int current_floor){
-  if (queue_length > 0){ // else do not change states
+  if (queue_active_reqs > 0){ // else do not change states
     if(queue_get_next_floor(current_floor, SLEEP) > current_floor){
       elevator_transition_state(p_state, UP, "Switched from sleep to up state.");
     }
