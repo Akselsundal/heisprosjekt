@@ -9,6 +9,7 @@
 #include <time.h>
 
 
+int time_last_timeout;
 
 /**
  * @brief Keeps the program busy waiting for @p number_of_ms .

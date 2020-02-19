@@ -15,12 +15,12 @@ typedef enum {
 
 void elevator_run();
 
-void elevator_update_curr_floor(int *last_floor);
+int elevator_check_new_floor(int *last_floor);
 
 
 // Doxygen
 
-int elevator_transition_state(state_t *p_now_state, state_t to_state, char *msg);
+int elevator_transition_state(state_t *p_now_state, state_t *p_prev_state state_t to_state, char *msg);
 
 
 #endif // ELEVATOR_H

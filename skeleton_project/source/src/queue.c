@@ -69,11 +69,11 @@ int queue_add_request(){
 
         printf("A request was added:\n")
         print_request(&queue_requests[f * HARDWARE_NUMBER_OF_FLOORS + order]);
-        return 0;  // Success
+        return 0;
       }
     }
   }
-  return -1;       // Failure
+  return -1;
 }
 
 void queue_remove_requests_on_floor(int arrived_floor){
