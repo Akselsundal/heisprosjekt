@@ -3,7 +3,7 @@ INC_DIR := source/inc
 HW_INC_DIR := source/driver
 BUILD_DIR := build
 
-SOURCES := main.c elevator.c example.c queue.c utilities.c
+SOURCES := $(shell find SOURCE_DIR -name "*.c")
 
 OBJ := $(addprefix $(BUILD_DIR)/, $(SOURCES:%.c=%.o))
 
