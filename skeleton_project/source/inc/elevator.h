@@ -13,6 +13,12 @@ typedef enum {
 } state_t;
 
 
+state_t elevator_state;
+state_t elevator_prev_state;
+int current_floor;
+char *state_strings[];
+
+
 void elevator_run();
 
 int elevator_check_new_floor(int *last_floor);

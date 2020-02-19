@@ -9,16 +9,18 @@ static void delay_ms(int number_of_ms);
 
 static void transition_from_sleep(state_t *p_state, int current_floor);
 
+state_strings = {"BOOT", "SLEEP", "UP", "DOWN", "DOORS_OPEN", "OBSTRUCTION", "STOP", "ERROR"};
+
 void elevator_run(){
 
   hardware_init();
   queue_init();
   
-  state_t state = BOOT;
-  state_t prev_state;
-  int current_floor = -1;  // Initially, unknown floor.
+  state = BOOT;
+  prev_state;
+  current_floor = -1;  // Initially, unknown floor.
 
-  int time_last_timeout = 0;
+  time_last_timeout = 0;
 
 
   delay_ms(10000);
@@ -28,7 +30,7 @@ void elevator_run(){
 
       case BOOT:
       hardware_command_movement(HARDWARE_MOVEMENT_UP);
-      if ((elevator_check_new_floor(&current_floor))) state = SLEEP;
+      if ((elevator_check_new_floor(&current_floor))) elevator_transition_state(&state, &prev_state, SLEEP, "");
       break;
 
       case SLEEP:
@@ -52,6 +54,7 @@ void elevator_run(){
       break;
 
       case DOORS_OPEN:
+      if (hardware_read_obstruction_signal()) elevator_transition_state(&state, &prev_state, OBSTRUCTION, "");
       queue_add_request();
       if (time_check_timeout(&time_last_timeout, 3000)){
         if(queue_get_next_floor(current_floor, prev_state) > current_floor){
@@ -64,7 +67,7 @@ void elevator_run(){
       break;
 
       case OBSTRUCTION:
-      
+      queue_flush();
       break;
       case STOP:
       break;
@@ -94,9 +97,10 @@ int elevator_transition_state(state_t *p_now_state, state_t *p_prev_state, state
   int trans_from_error      = *p_now_state == ERROR       && to_state == SLEEP;
 
   if (trans_from_sleep || trans_from_up || trans_from_down || trans_from_doors_open || trans_from_stop || trans_from_error){
+    printf("Changing states: %s -> %s\n", state_strings[*p_now_state], state_strings[*p_prev_state]);
     *p_prev_state = *p_now_state;
     *p_now_state = to_state;
-    printf("%s\n", msg);
+
     return 0;
   }
   else {
