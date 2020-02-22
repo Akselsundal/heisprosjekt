@@ -12,7 +12,24 @@ static void parse_argvs(int argc, char **argv);
 int main(int argc, char **argv){
   parse_argvs(argc, argv);
 
-  elevator_run();
+  printf("Running normal elevator program!\n\n");
+
+  hardware_init();
+  queue_init();
+  
+  state_t state = BOOT;
+  HardwareMovement elevator_movement = HARDWARE_MOVEMENT_UP;
+  int elevator_current_floor = -1;  // Initially, unknown floor.
+  int elevator_next_floor = -1;     // Initially, none.
+
+  // Run program continously
+  while(1){
+
+    hardware_command_movement(elevator_movement);
+    elevator_state_functions[state](state);
+
+  }
+
 }
 
 

@@ -9,7 +9,8 @@
  */
 #ifndef HARDWARE_H
 #define HARDWARE_H
-#define HARDWARE_NUMBER_OF_FLOORS 4
+#define HARDWARE_NUMBER_OF_FLOORS                   4
+#define HARDWARE_NUMBER_OF_MOVEMENT_COMMANDS        3
 
 /**
  * @brief Movement type used in @c hardware_command_movement.

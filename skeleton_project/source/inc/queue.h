@@ -8,8 +8,7 @@
 #include "hardware.h"
 #include "elevator.h"
 
-#define NUMBER_OF_POSSIBLE_REQUESTS     HARDWARE_NUMBER_OF_FLOORS * 3   // Except for two options that are not possible in hardware
-
+#define NUMBER_OF_POSSIBLE_REQUESTS HARDWARE_NUMBER_OF_FLOORS * HARDWARE_NUMBER_OF_MOVEMENT_COMMANDS
 /*! \struct request_t
 * @brief This struct represents a request.
 */
@@ -42,7 +41,7 @@ void queue_init();
 * @brief A function to find which floor to deal with next.
 * @param[in] current_floor The floor where the elevator currently is situated.
 * @param[in] state_t The state of which to elevator is currently in.
-* @return -1 if @p queue_active_reqs is zero, 0 else.
+* @return -1 if @p queue_active_reqs is zero, otherwise which floor to go to.
 */
 int queue_get_next_floor(int current_floor, state_t state);
 
@@ -56,7 +55,7 @@ void queue_add_request();
 *Will set all requests in @p queue_requests on the @p arived_floor to inactive.
 *@param[in] arrived_floor The floor which the elevator just arrived.
 */
-void queue_remove_requests_on_floor();
+int queue_remove_requests_on_floor();
 
 /**
 *@breif A function to remove all @p request in @p queue_requests to inactive.

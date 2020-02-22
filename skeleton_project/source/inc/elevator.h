@@ -7,37 +7,35 @@
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
 
+
+#define NUMBER_OF_STATES            6
+
 /**
 *@enum An enum to describe which state the elevator is in.
 */
 typedef enum {
     BOOT, /*!< The state of the elevator at boot */
-    SLEEP, /*!< The state when there are no requests */
-    UP, /*!< The elevator is going up state */
-    DOWN, /*!< The elevator is going down state */
+    IDLE, /*!< The state when there are no requests */
+    MOVE, /*< The elevator is moving */
     DOORS_OPEN, /*!< The elevator doors are open */
-    OBSTRUCTION, /*!< There is an obstruction! */
     STOP, /*!< Stop is active */
-    ERROR /*!< State to handle errors */
+    ERROR, /*!< State to handle errors */
 } state_t;
 
-/**
-*
-*/
-state_t elevator_state;
-state_t elevator_prev_state;
-int current_floor;
-char *state_strings[];
 
+extern void (*elevator_state_functions[NUMBER_OF_STATES])(state_t *p_now_state);
+extern char **elevator_state_strings;
 
-void elevator_run();
+extern HardwareMovement elevator_movement;
+extern int elevator_current_floor;
+extern int elevator_next_floor;
+extern char **elevator_state_strings;
 
-int elevator_check_new_floor(int *last_floor);
-
-
-// Doxygen
-
-int elevator_transition_state(state_t *p_now_state, state_t *p_prev_state state_t to_state, char *msg);
-
+void elevator_boot_state(state_t *p_now_state);
+void elevator_idle_state(state_t *p_now_state);
+void elevator_move_state(state_t *p_now_state);
+void elevator_doors_open_state(state_t *p_now_state);
+void elevator_stop_state(state_t *p_now_state);
+void elevator_error_state(state_t *p_now_state);
 
 #endif // ELEVATOR_H

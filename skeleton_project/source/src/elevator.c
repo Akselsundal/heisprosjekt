@@ -5,79 +5,81 @@
 #include "hardware.h"
 #include "queue.h"
 
-static void delay_ms(int number_of_ms);
-
-static void transition_from_sleep(state_t *p_state, int current_floor);
-
-state_strings = {"BOOT", "SLEEP", "UP", "DOWN", "DOORS_OPEN", "OBSTRUCTION", "STOP", "ERROR"};
-
-void elevator_run(){
-
-  hardware_init();
-  queue_init();
-  
-  state = BOOT;
-  prev_state;
-  current_floor = -1;  // Initially, unknown floor.
-
-  time_last_timeout = 0;
+// Local helper functions
+static int check_new_floor(int *last_floor);
+static int transition_state(state_t *p_now_state, state_t to_state);
 
 
-  delay_ms(10000);
-  while(1){
+void elevator_boot_state(state_t *p_now_state){
+  if ((check_new_floor(&elevator_current_floor))) {
+    transition_state(p_now_state, IDLE);
+  }
+}
 
-    switch(state){
+void elevator_idle_state(state_t *p_now_state){
+  elevator_movement = HARDWARE_MOVEMENT_STOP;
+  queue_add_request();
 
-      case BOOT:
-      hardware_command_movement(HARDWARE_MOVEMENT_UP);
-      if ((elevator_check_new_floor(&current_floor))) elevator_transition_state(&state, &prev_state, SLEEP, "");
-      break;
+  elevator_next_floor = queue_get_next_floor(elevator_current_floor, *p_now_state);
 
-      case SLEEP:
-      hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-      queue_add_request();
-      transition_from_sleep(&state, current_floor);   // state is a ptr and is updated in the function
-      break;
+  if (elevator_next_floor == -1) return;    // Do nothing
+  else if (elevator_next_floor > elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_UP;
+    transition_state(p_now_state, MOVE);
+  }
+  else if (elevator_next_floor < elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_DOWN;
+    transition_state(p_now_state, MOVE);
+  }
+  else{ // A request on the same floor the elevator is on
+    transition_state(p_now_state, DOORS_OPEN);
+  }
+}
 
-      case UP:
-      hardware_command_movement(HARDWARE_MOVEMENT_UP);
-      queue_add_request();
-      if (elevator_check_new_floor(&current_floor)) 
-        elevator_transition_state(&state, &prev_state, DOORS_OPEN, "");
-      break;
+void elevator_move_state(state_t *p_now_state){
+  queue_add_request();
 
-      case DOWN:
-      elevator_update_curr_floor(&current_floor);
-      queue_add_request();
-      if (elevator_check_new_floor(&current_floor))
-        elevator_transition_state(&state, &prev_state, DOORS_OPEN, "");
-      break;
-
-      case DOORS_OPEN:
-      if (hardware_read_obstruction_signal()) elevator_transition_state(&state, &prev_state, OBSTRUCTION, "");
-      queue_add_request();
-      if (time_check_timeout(&time_last_timeout, 3000)){
-        if(queue_get_next_floor(current_floor, prev_state) > current_floor){
-          elevator_transition_state(&state, UP, "");
-        }
-        else if (queue_get_next_floor(current_floor, prev_state) < current_floor){
-          elevator_transition_state(&state, DOWN, "");
-        }
-      }
-      break;
-
-      case OBSTRUCTION:
-      queue_flush();
-      break;
-      case STOP:
-      break;
-      case ERROR:
-      break;
+  if (check_new_floor(&elevator_current_floor)){
+    if (elevator_current_floor == elevator_next_floor){
+      elevator_next_floor = queue_get_next_floor(elevator_current_floor, *p_now_state);
+      elevator_movement = HARDWARE_MOVEMENT_STOP;
+      transition_state(p_now_state, DOORS_OPEN);
     }
   }
 }
 
-int elevator_check_new_floor(int *last_floor){
+void elevator_doors_open_state(state_t *p_now_state){
+  queue_add_request();
+  if (queue_remove_requests_on_floor(elevator_current_floor)){
+    // Reset timer for timeout
+  }
+
+  // Check for timeout on three seconds. If it occurs, change states: 
+  if (elevator_next_floor == -1){
+    transition_state(p_now_state, IDLE);
+  }
+  else if (elevator_next_floor > elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_UP;
+    transition_state(p_now_state, MOVE);
+  }
+  else if (elevator_next_floor < elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_DOWN;
+    transition_state(p_now_state, MOVE);
+  }
+  else { // A request on the same floor the elevator is on
+    return;   // This is uneccessary code, but shows the situation has been thought through.
+  }
+}
+
+void elevator_stop_state(state_t *p_now_state){
+  // Run code for each state here.
+}
+void elevator_error_state(state_t *p_now_state){
+  // Run code for each state here.
+}
+
+
+static int check_new_floor(int *last_floor){
   for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
     if (hardware_read_floor_sensor(i) && *last_floor != i) {
       *last_floor = i;
@@ -87,42 +89,42 @@ int elevator_check_new_floor(int *last_floor){
   return -1;
 }
 
-int elevator_transition_state(state_t *p_now_state, state_t *p_prev_state, state_t to_state, char *msg){
-  int trans_from_sleep      = *p_now_state == SLEEP       && (to_state == UP || to_state == DOWN || to_state == STOP);
-  int trans_from_up         = *p_now_state == UP          && (to_state == DOORS_OPEN || to_state == STOP);
-  int trans_from_down       = *p_now_state == DOWN        && (to_state == DOORS_OPEN || to_state == STOP);
-  int trans_from_doors_open = *p_now_state == DOORS_OPEN  && (to_state == SLEEP || to_state == STOP
-                                                          || to_state == UP || to_state == DOWN);
+static int transition_state(state_t *p_now_state, state_t to_state){
+  int trans_from_sleep      = *p_now_state == IDLE        && (to_state == MOVE || to_state == STOP);
+  int trans_from_move       = *p_now_state == MOVE        && (to_state == DOORS_OPEN || to_state == STOP);
+  int trans_from_doors_open = *p_now_state == DOORS_OPEN  && (to_state == IDLE || to_state == STOP
+                                                          || to_state == MOVE);
   int trans_from_stop       = *p_now_state == STOP        && to_state == ERROR;
-  int trans_from_error      = *p_now_state == ERROR       && to_state == SLEEP;
+  int trans_from_error      = *p_now_state == ERROR       && to_state == IDLE;
 
-  if (trans_from_sleep || trans_from_up || trans_from_down || trans_from_doors_open || trans_from_stop || trans_from_error){
-    printf("Changing states: %s -> %s\n", state_strings[*p_now_state], state_strings[*p_prev_state]);
-    *p_prev_state = *p_now_state;
+  if (trans_from_sleep || trans_from_move || trans_from_doors_open || trans_from_stop || trans_from_error){
+    printf("Changing states: %s -> %s\n", elevator_state_strings[*p_now_state], elevator_state_strings[to_state]);
     *p_now_state = to_state;
-
     return 0;
   }
+
   else {
-    *p_prev_state = *p_now_state;
     *p_now_state = ERROR;
     printf("Error: Incorrect transitions of states!\n");
     return -1;
   }
 }
 
-static void transition_from_sleep(state_t *p_state, int current_floor){
-  if (queue_active_reqs > 0){ // else do not change states
-    if(queue_get_next_floor(current_floor, SLEEP) > current_floor){
-      elevator_transition_state(p_state, UP, "Switched from sleep to up state.\n");
-    }
-    else if (queue_get_next_floor(current_floor, SLEEP) < current_floor){
-      elevator_transition_state(p_state, DOWN, "Switched from sleep to down state.\n");
-    }
-    else{
-      elevator_transition_state(p_state, ERROR, "");
-      printf("Error: Queue module concluded to go to the floor the same floor it already is on.\n");
-    }
-  }
-}
 
+void (*elevator_state_functions[NUMBER_OF_STATES])(state_t *p_now_state) = {
+  elevator_boot_state,
+  elevator_idle_state,
+  elevator_move_state,
+  elevator_doors_open_state,
+  elevator_stop_state,
+  elevator_error_state,
+};
+
+char **elevator_state_strings = {
+  "BOOT", 
+  "IDLE", 
+  "MOVE",
+  "DOORS_OPEN",  
+  "STOP", 
+  "ERROR",
+};
