@@ -1,0 +1,115 @@
+\hypertarget{queue_8h}{}\doxysection{skeleton\+\_\+project/source/inc/queue.h File Reference}
+\label{queue_8h}\index{skeleton\_project/source/inc/queue.h@{skeleton\_project/source/inc/queue.h}}
+
+
+The queue system, handles everything that has to do with the queue.  
+
+
+{\ttfamily \#include \char`\"{}hardware.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}elevator.\+h\char`\"{}}\newline
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structrequest__t}{request\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em This struct represents a request. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{queue_8h_aaceffef4d77fa7f703e6f5041124bb26}\label{queue_8h_aaceffef4d77fa7f703e6f5041124bb26}} 
+\#define {\bfseries N\+U\+M\+B\+E\+R\+\_\+\+O\+F\+\_\+\+P\+O\+S\+S\+I\+B\+L\+E\+\_\+\+R\+E\+Q\+U\+E\+S\+TS}~H\+A\+R\+D\+W\+A\+R\+E\+\_\+\+N\+U\+M\+B\+E\+R\+\_\+\+O\+F\+\_\+\+F\+L\+O\+O\+RS $\ast$ 3
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{queue_8h_a738c57c092eaae0b4e2e663d8cce93d5}\label{queue_8h_a738c57c092eaae0b4e2e663d8cce93d5}} 
+void \mbox{\hyperlink{queue_8h_a738c57c092eaae0b4e2e663d8cce93d5}{queue\+\_\+init}} ()
+\begin{DoxyCompactList}\small\item\em A function to initiate the queue system\+: sets number of active to 0 and fills {\ttfamily queue\+\_\+requests}. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{queue_8h_a4d73ff2461e2658a3faf03c63e298f3d}{queue\+\_\+get\+\_\+next\+\_\+floor}} (int current\+\_\+floor, \mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} state)
+\begin{DoxyCompactList}\small\item\em A function to find which floor to deal with next. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{queue_8h_abadd760e54cdb5645e89303cae94c490}{queue\+\_\+add\+\_\+request}} ()
+\item 
+void \mbox{\hyperlink{queue_8h_aab45275958777af824a201fa42a82dfe}{queue\+\_\+remove\+\_\+requests\+\_\+on\+\_\+floor}} ()
+\item 
+void \mbox{\hyperlink{queue_8h_a8dc97cd2b0a884c6a8511933726c8b52}{queue\+\_\+flush}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structrequest__t}{request\+\_\+t}} \mbox{\hyperlink{queue_8h_a5dfe24f0bf006164dcc33ee932660ac5}{queue\+\_\+requests}} \mbox{[}N\+U\+M\+B\+E\+R\+\_\+\+O\+F\+\_\+\+P\+O\+S\+S\+I\+B\+L\+E\+\_\+\+R\+E\+Q\+U\+E\+S\+TS\mbox{]}
+\item 
+int \mbox{\hyperlink{queue_8h_ae2e150b47f3c6c690e8d1e89c5c21318}{queue\+\_\+active\+\_\+reqs}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The queue system, handles everything that has to do with the queue. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{queue_8h_abadd760e54cdb5645e89303cae94c490}\label{queue_8h_abadd760e54cdb5645e89303cae94c490}} 
+\index{queue.h@{queue.h}!queue\_add\_request@{queue\_add\_request}}
+\index{queue\_add\_request@{queue\_add\_request}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_add\_request()}{queue\_add\_request()}}
+{\footnotesize\ttfamily void queue\+\_\+add\+\_\+request (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+@breif A function to deal with adding requests. \mbox{\Hypertarget{queue_8h_a8dc97cd2b0a884c6a8511933726c8b52}\label{queue_8h_a8dc97cd2b0a884c6a8511933726c8b52}} 
+\index{queue.h@{queue.h}!queue\_flush@{queue\_flush}}
+\index{queue\_flush@{queue\_flush}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_flush()}{queue\_flush()}}
+{\footnotesize\ttfamily void queue\+\_\+flush (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+@breif A function to remove all {\ttfamily request} in {\ttfamily queue\+\_\+requests} to inactive. \mbox{\Hypertarget{queue_8h_a4d73ff2461e2658a3faf03c63e298f3d}\label{queue_8h_a4d73ff2461e2658a3faf03c63e298f3d}} 
+\index{queue.h@{queue.h}!queue\_get\_next\_floor@{queue\_get\_next\_floor}}
+\index{queue\_get\_next\_floor@{queue\_get\_next\_floor}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_get\_next\_floor()}{queue\_get\_next\_floor()}}
+{\footnotesize\ttfamily int queue\+\_\+get\+\_\+next\+\_\+floor (\begin{DoxyParamCaption}\item[{int}]{current\+\_\+floor,  }\item[{\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}}}]{state }\end{DoxyParamCaption})}
+
+
+
+A function to find which floor to deal with next. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em current\+\_\+floor} & The floor where the elevator currently is situated. \\
+\hline
+\mbox{\texttt{ in}}  & {\em state\+\_\+t} & The state of which to elevator is currently in. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/1 if {\ttfamily queue\+\_\+active\+\_\+reqs} is zero, 0 else. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{queue_8h_aab45275958777af824a201fa42a82dfe}\label{queue_8h_aab45275958777af824a201fa42a82dfe}} 
+\index{queue.h@{queue.h}!queue\_remove\_requests\_on\_floor@{queue\_remove\_requests\_on\_floor}}
+\index{queue\_remove\_requests\_on\_floor@{queue\_remove\_requests\_on\_floor}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_remove\_requests\_on\_floor()}{queue\_remove\_requests\_on\_floor()}}
+{\footnotesize\ttfamily void queue\+\_\+remove\+\_\+requests\+\_\+on\+\_\+floor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+@breif A function to deal with removing requests that are dealt with. Will set all requests in {\ttfamily queue\+\_\+requests} on the {\ttfamily arived\+\_\+floor} to inactive. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em arrived\+\_\+floor} & The floor which the elevator just arrived. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{queue_8h_ae2e150b47f3c6c690e8d1e89c5c21318}\label{queue_8h_ae2e150b47f3c6c690e8d1e89c5c21318}} 
+\index{queue.h@{queue.h}!queue\_active\_reqs@{queue\_active\_reqs}}
+\index{queue\_active\_reqs@{queue\_active\_reqs}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_active\_reqs}{queue\_active\_reqs}}
+{\footnotesize\ttfamily queue\+\_\+active\+\_\+reqs}
+
+Describes the number of active requests in {\ttfamily queue\+\_\+requests}. 
+
+Definition at line 33 of file queue.\+h.
+
+\mbox{\Hypertarget{queue_8h_a5dfe24f0bf006164dcc33ee932660ac5}\label{queue_8h_a5dfe24f0bf006164dcc33ee932660ac5}} 
+\index{queue.h@{queue.h}!queue\_requests@{queue\_requests}}
+\index{queue\_requests@{queue\_requests}!queue.h@{queue.h}}
+\doxysubsubsection{\texorpdfstring{queue\_requests}{queue\_requests}}
+{\footnotesize\ttfamily queue\+\_\+requests}
+
+Array of type {\ttfamily \mbox{\hyperlink{structrequest__t}{request\+\_\+t}}} with the size of possible requests, {\ttfamily N\+U\+M\+B\+E\+R\+\_\+\+O\+F\+\_\+\+P\+O\+S\+S\+I\+B\+L\+E\+\_\+\+R\+E\+Q\+U\+E\+S\+TS} 
+
+Definition at line 28 of file queue.\+h.
+

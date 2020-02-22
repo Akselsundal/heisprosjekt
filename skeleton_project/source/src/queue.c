@@ -12,7 +12,7 @@ static int compare_requests(const request_t req1, const request_t req2);
 
 void queue_init(){
   queue_active_reqs = 0;
-  
+
   request_t req;
   req.active = 0;
   for (int f = 0; f < HARDWARE_NUMBER_OF_FLOORS; f++){
@@ -26,7 +26,7 @@ void queue_init(){
 
 int queue_get_next_floor(int current_floor, state_t state){
   if (!queue_active_reqs) return -1;  // No elements in queue
-  
+
   request_t request;
 
   // Identify first active element in queue
@@ -41,17 +41,17 @@ int queue_get_next_floor(int current_floor, state_t state){
   // Determine best active element in queue
   for (int j = i + 1; j < NUMBER_OF_POSSIBLE_REQUESTS; j++){
     if (queue_requests[j].active){
-      if (state == UP queue_requests[i].order_type == HARDWARE_ORDER_UP 
+      if (state == UP && queue_requests[i].order_type == HARDWARE_ORDER_UP 
           && queue_requests[j].floor > current_floor && queue_requests[j].floor < request.floor){
-        
+
         request = queue_requests[j];
-      
+
       }
       else if (state == DOWN && queue_requests[i].order_type == HARDWARE_ORDER_DOWN
           && queue_requests[j].floor < current_floor && queue_requests[j].floor > request.floor){
-        
+
         request = queue_requests[j];
-      
+
       }
     }
   }
@@ -78,7 +78,7 @@ int queue_add_request(){
 
 void queue_remove_requests_on_floor(int arrived_floor){
   if (!queue_active_reqs) return -1;
-  
+
   printf("Attempting to remove request on floor %i:\n", arrived_floor);
 
   for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){

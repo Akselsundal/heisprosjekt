@@ -1,0 +1,101 @@
+\hypertarget{elevator_8h}{}\doxysection{skeleton\+\_\+project/source/inc/elevator.h File Reference}
+\label{elevator_8h}\index{skeleton\_project/source/inc/elevator.h@{skeleton\_project/source/inc/elevator.h}}
+
+
+This is the finite state machine, and deals with the state of the elevator and the transition between states.  
+
+
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} \{ \newline
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aee429d2b18e984f9be3d8a35ab58f77f}{B\+O\+OT}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ad6137abebe4fdc59e2f0f2c84bdbe3fa}{S\+L\+E\+EP}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aba595d8bca8bc5e67c37c0a9d89becfa}{UP}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a9b0b4a95b99523966e0e34ffdadac9da}{D\+O\+WN}}, 
+\newline
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ace3e6745bd83d4666411b35de43ffb8c}{D\+O\+O\+R\+S\+\_\+\+O\+P\+EN}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a51ca099f99b472823faf1cb3f46b9baa}{O\+B\+S\+T\+R\+U\+C\+T\+I\+ON}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a679ee5320d66c8322e310daeb2ee99b8}{S\+T\+OP}}, 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a2fd6f336d08340583bd620a7f5694c90}{E\+R\+R\+OR}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{elevator_8h_a49ce0254c82d164c504d0c97998800f5}\label{elevator_8h_a49ce0254c82d164c504d0c97998800f5}} 
+void {\bfseries elevator\+\_\+run} ()
+\item 
+\mbox{\Hypertarget{elevator_8h_a2a883a61529892d7b02f35fd1a0d2292}\label{elevator_8h_a2a883a61529892d7b02f35fd1a0d2292}} 
+int {\bfseries elevator\+\_\+check\+\_\+new\+\_\+floor} (int $\ast$last\+\_\+floor)
+\item 
+\mbox{\Hypertarget{elevator_8h_a0502edd3ca5b50efc7a9b3cde7a2ca00}\label{elevator_8h_a0502edd3ca5b50efc7a9b3cde7a2ca00}} 
+int {\bfseries elevator\+\_\+transition\+\_\+state} (\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} $\ast$p\+\_\+now\+\_\+state, \mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} $\ast$p\+\_\+prev\+\_\+state \mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} to\+\_\+state, char $\ast$msg)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{elevator_8h_a112bd705704808172e093e8c3e3f8399}\label{elevator_8h_a112bd705704808172e093e8c3e3f8399}} 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} {\bfseries elevator\+\_\+state}
+\item 
+\mbox{\Hypertarget{elevator_8h_ab214eca7f6aed254a5f75cebe4f034f0}\label{elevator_8h_ab214eca7f6aed254a5f75cebe4f034f0}} 
+\mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}} {\bfseries elevator\+\_\+prev\+\_\+state}
+\item 
+\mbox{\Hypertarget{elevator_8h_a53f0cf8d6c7426344a7336af4b06925a}\label{elevator_8h_a53f0cf8d6c7426344a7336af4b06925a}} 
+int {\bfseries current\+\_\+floor}
+\item 
+\mbox{\Hypertarget{elevator_8h_a8e9a4c5f3073dd0ca882e5b5840aaded}\label{elevator_8h_a8e9a4c5f3073dd0ca882e5b5840aaded}} 
+char $\ast$ {\bfseries state\+\_\+strings} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This is the finite state machine, and deals with the state of the elevator and the transition between states. 
+
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}} 
+\index{elevator.h@{elevator.h}!state\_t@{state\_t}}
+\index{state\_t@{state\_t}!elevator.h@{elevator.h}}
+\doxysubsubsection{\texorpdfstring{state\_t}{state\_t}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{elevator_8h_aa0aafed44fec19806d8f9ad834be1248}{state\+\_\+t}}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{BOOT@{BOOT}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!BOOT@{BOOT}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aee429d2b18e984f9be3d8a35ab58f77f}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aee429d2b18e984f9be3d8a35ab58f77f}} 
+B\+O\+OT&The state of the elevator at boot \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{SLEEP@{SLEEP}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!SLEEP@{SLEEP}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ad6137abebe4fdc59e2f0f2c84bdbe3fa}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ad6137abebe4fdc59e2f0f2c84bdbe3fa}} 
+S\+L\+E\+EP&The state when there are no requests \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{UP@{UP}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!UP@{UP}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aba595d8bca8bc5e67c37c0a9d89becfa}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248aba595d8bca8bc5e67c37c0a9d89becfa}} 
+UP&The elevator is going up state \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DOWN@{DOWN}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!DOWN@{DOWN}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a9b0b4a95b99523966e0e34ffdadac9da}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a9b0b4a95b99523966e0e34ffdadac9da}} 
+D\+O\+WN&The elevator is going down state \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{DOORS\_OPEN@{DOORS\_OPEN}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!DOORS\_OPEN@{DOORS\_OPEN}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ace3e6745bd83d4666411b35de43ffb8c}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248ace3e6745bd83d4666411b35de43ffb8c}} 
+D\+O\+O\+R\+S\+\_\+\+O\+P\+EN&The elevator doors are open \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{OBSTRUCTION@{OBSTRUCTION}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!OBSTRUCTION@{OBSTRUCTION}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a51ca099f99b472823faf1cb3f46b9baa}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a51ca099f99b472823faf1cb3f46b9baa}} 
+O\+B\+S\+T\+R\+U\+C\+T\+I\+ON&There is an obstruction! \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{STOP@{STOP}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!STOP@{STOP}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a679ee5320d66c8322e310daeb2ee99b8}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a679ee5320d66c8322e310daeb2ee99b8}} 
+S\+T\+OP&Stop is active \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{ERROR@{ERROR}!elevator.h@{elevator.h}}\index{elevator.h@{elevator.h}!ERROR@{ERROR}}}\mbox{\Hypertarget{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a2fd6f336d08340583bd620a7f5694c90}\label{elevator_8h_aa0aafed44fec19806d8f9ad834be1248a2fd6f336d08340583bd620a7f5694c90}} 
+E\+R\+R\+OR&State to handle errors \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+Definition at line 13 of file elevator.\+h.
+

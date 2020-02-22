@@ -1,0 +1,52 @@
+\hypertarget{time_8h}{}\doxysection{skeleton\+\_\+project/source/inc/time.h File Reference}
+\label{time_8h}\index{skeleton\_project/source/inc/time.h@{skeleton\_project/source/inc/time.h}}
+
+
+Time module for delay and timeout functions.  
+
+
+{\ttfamily \#include $<$time.\+h$>$}\newline
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{time_8h_a274df0fb31a87f69e991d946480113d3}{time\+\_\+delay\+\_\+ms}} (int number\+\_\+of\+\_\+ms)
+\begin{DoxyCompactList}\small\item\em Keeps the program busy waiting for {\ttfamily number\+\_\+of\+\_\+ms} . \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{time_8h_a6f61714b1fedc21bc52bd21e1437d6e2}\label{time_8h_a6f61714b1fedc21bc52bd21e1437d6e2}} 
+int {\bfseries time\+\_\+check\+\_\+timeout} (time\+\_\+t $\ast$prev\+\_\+time, time\+\_\+t $\ast$timeout)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{time_8h_acbca90428c8f0b8985bb99d9b6257e0a}\label{time_8h_acbca90428c8f0b8985bb99d9b6257e0a}} 
+int {\bfseries time\+\_\+last\+\_\+timeout}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Time module for delay and timeout functions. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{time_8h_a274df0fb31a87f69e991d946480113d3}\label{time_8h_a274df0fb31a87f69e991d946480113d3}} 
+\index{time.h@{time.h}!time\_delay\_ms@{time\_delay\_ms}}
+\index{time\_delay\_ms@{time\_delay\_ms}!time.h@{time.h}}
+\doxysubsubsection{\texorpdfstring{time\_delay\_ms()}{time\_delay\_ms()}}
+{\footnotesize\ttfamily void time\+\_\+delay\+\_\+ms (\begin{DoxyParamCaption}\item[{int}]{number\+\_\+of\+\_\+ms }\end{DoxyParamCaption})}
+
+
+
+Keeps the program busy waiting for {\ttfamily number\+\_\+of\+\_\+ms} . 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em p\+\_\+from} & Source buffer. \\
+\hline
+\mbox{\texttt{ out}}  & {\em p\+\_\+to} & Destination buffer. \\
+\hline
+\mbox{\texttt{ in}}  & {\em size} & Number of integers in the buffer.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on success, 1 if either {\ttfamily p\+\_\+from} or {\ttfamily p\+\_\+to} is a {\ttfamily N\+U\+LL} pointer. 
+\end{DoxyReturn}
