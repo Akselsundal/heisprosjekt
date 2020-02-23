@@ -3,13 +3,13 @@
  * @brief Time module for delay and timeout functions.
  */
 
-#ifndef TIME_H
-#define TIME_H
+#ifndef TIMER_H
+#define TIMER_H
 
 #include <time.h>
 
 
-int time_last_timeout;
+extern time_t timer_last_timeout;
 
 /**
  * @brief Keeps the program busy waiting for @p number_of_ms .
@@ -21,8 +21,8 @@ int time_last_timeout;
  * @return 0 on success, 1 if either @p p_from or @p p_to
  * is a @c NULL pointer.
  */
-void time_delay_ms(int number_of_ms);
+void timer_delay_ms(int number_of_ms);
 
-int time_check_timeout(time_t *prev_time, time_t *timeout);
+int timer_check_timeout(time_t *start_time, const int timeout);
 
-#endif // TIME_H
+#endif // TIMER_H

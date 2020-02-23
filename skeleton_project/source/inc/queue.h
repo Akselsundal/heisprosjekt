@@ -35,7 +35,7 @@ int queue_active_reqs;
 * @brief A function to initiate the queue system: sets number of active to 0 and fills @p queue_requests
 */
 void queue_init();
-
+void print_active_requests_table();
 
 /**
 * @brief A function to find which floor to deal with next.
@@ -43,7 +43,7 @@ void queue_init();
 * @param[in] state_t The state of which to elevator is currently in.
 * @return -1 if @p queue_active_reqs is zero, otherwise which floor to go to.
 */
-int queue_get_next_floor(int current_floor, state_t state);
+int queue_get_next_floor(int current_floor);
 
 /**
 @breif A function to deal with adding requests.

@@ -3,7 +3,7 @@ INC_DIR := source/inc
 HW_INC_DIR := source/driver
 BUILD_DIR := build
 
-SOURCES := $(shell find SOURCE_DIR -name "*.c")
+SOURCES := main.c queue.c elevator.c timer.c example.c
 
 OBJ := $(addprefix $(BUILD_DIR)/, $(SOURCES:%.c=%.o))
 
@@ -11,7 +11,7 @@ DRIVER_ARCHIVE := $(BUILD_DIR)/libdriver.a
 DRIVER_SOURCE := hardware.c io.c
 
 CC := gcc
-CFLAGS := -O0 -g3 -Wall -Werror -std=c11 -I$(INC_DIR) -I$(HW_INC_DIR)
+CFLAGS := -O0 -g3 -Wall -std=c11 -I$(INC_DIR) -I$(HW_INC_DIR)
 LDFLAGS := -L$(BUILD_DIR) -ldriver -lcomedi
 
 .DEFAULT_GOAL := elevator

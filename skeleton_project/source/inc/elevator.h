@@ -7,6 +7,7 @@
 #ifndef ELEVATOR_H
 #define ELEVATOR_H
 
+#include "hardware.h"
 
 #define NUMBER_OF_STATES            6
 
@@ -24,12 +25,11 @@ typedef enum {
 
 
 extern void (*elevator_state_functions[NUMBER_OF_STATES])(state_t *p_now_state);
-extern char **elevator_state_strings;
+extern char *elevator_state_strings[];
 
 extern HardwareMovement elevator_movement;
 extern int elevator_current_floor;
 extern int elevator_next_floor;
-extern char **elevator_state_strings;
 
 void elevator_boot_state(state_t *p_now_state);
 void elevator_idle_state(state_t *p_now_state);
