@@ -29,11 +29,11 @@ void elevator_idle_state(state_t *p_now_state){
   elevator_next_floor = queue_get_next_floor(elevator_current_floor);
 
   if (elevator_next_floor == -1) return;    // Do nothing
-  else if (elevator_next_floor > elevator_current_floor){
+  else if (elevator_next_floor > elevator_current_floor && elevator_current_floor != HARDWARE_NUMBER_OF_FLOORS){
     elevator_movement = HARDWARE_MOVEMENT_UP;
     transition_state(p_now_state, MOVE);
   }
-  else if (elevator_next_floor < elevator_current_floor){
+  else if (elevator_next_floor < elevator_current_floor && elevator_current_floor != 0){
     elevator_movement = HARDWARE_MOVEMENT_DOWN;
     transition_state(p_now_state, MOVE);
   }
@@ -48,8 +48,8 @@ void elevator_move_state(state_t *p_now_state){
 
   if (check_new_floor(&elevator_current_floor)){
     if (elevator_current_floor == elevator_next_floor){
-      elevator_next_floor = queue_get_next_floor(elevator_current_floor);
       elevator_movement = HARDWARE_MOVEMENT_STOP;
+      elevator_next_floor = queue_get_next_floor(elevator_current_floor);
       transition_state(p_now_state, DOORS_OPEN);
     }
   }
@@ -61,7 +61,7 @@ void elevator_doors_open_state(state_t *p_now_state){
   time_t timer_last_timeout;
 
   if (removed_requests){
-    printf("Requests on floor %i removed [%i].\n", elevator_current_floor + 1, removed_requests);
+    printf("Requests on floor %i removed.\n", elevator_current_floor + 1);
 
     timer_last_timeout = 0;
     time(&timer_last_timeout);
@@ -97,7 +97,7 @@ void elevator_error_state(state_t *p_now_state){
   // Run code for each state here.
 }
 
-
+//
 static int check_new_floor(int *last_floor){
   for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
     if (hardware_read_floor_sensor(i) && *last_floor != i) {
