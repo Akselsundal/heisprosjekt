@@ -28,6 +28,7 @@ extern void (*elevator_state_functions[NUMBER_OF_STATES])(state_t *p_now_state);
 extern char *elevator_state_strings[];
 
 extern HardwareMovement elevator_movement;
+extern int elevator_new_floor;
 extern int elevator_current_floor;
 extern int elevator_next_floor;
 

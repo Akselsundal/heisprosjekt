@@ -21,7 +21,6 @@ extern time_t timer_last_timeout;
  * @return 0 on success, 1 if either @p p_from or @p p_to
  * is a @c NULL pointer.
  */
-void timer_delay_ms(int number_of_ms);
 
 int timer_check_timeout(time_t *start_time, const int timeout);
 

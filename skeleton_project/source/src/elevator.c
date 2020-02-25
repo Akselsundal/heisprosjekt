@@ -18,6 +18,7 @@ int elevator_next_floor = -1;     // Initially, none.
 
 void elevator_boot_state(state_t *p_now_state){
   if ((check_new_floor(&elevator_current_floor) != -1)) {
+    //Oppdatere el_current_floor her? 
     transition_state(p_now_state, IDLE);
   }
 }
@@ -45,11 +46,12 @@ void elevator_idle_state(state_t *p_now_state){
 void elevator_move_state(state_t *p_now_state){
   queue_add_request();
   elevator_next_floor = queue_get_next_floor(elevator_current_floor);
-
+  
   if (check_new_floor(&elevator_current_floor)){
     if (elevator_current_floor == elevator_next_floor){
+      printf("Current_floor is %i\t", elevator_current_floor);
       elevator_movement = HARDWARE_MOVEMENT_STOP;
-      elevator_next_floor = queue_get_next_floor(elevator_current_floor);
+      //elevator_next_floor = queue_get_next_floor(elevator_current_floor); overflødig?
       transition_state(p_now_state, DOORS_OPEN);
     }
   }
