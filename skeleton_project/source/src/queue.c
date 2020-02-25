@@ -39,34 +39,21 @@ int queue_get_next_floor(int current_floor){
   int smallest_diff = HARDWARE_NUMBER_OF_FLOORS - 1;    // Start with worst case and find better options
 
   for (int i = 0; i < NUMBER_OF_POSSIBLE_REQUESTS; i++){
-
-
     int diff = queue_requests[i].floor - current_floor;
-    //if (queue_requests[i].order_type == HARDWARE_ORDER_INSIDE)
-    // Case 1: elevator going up, request from above, request going up.
-    // Priority number 1.
     if (elevator_movement == HARDWARE_MOVEMENT_UP && queue_requests[i].order_type == HARDWARE_ORDER_UP
                                                   && queue_requests[i].active
                                                   && queue_requests[i].floor > current_floor){
       return queue_requests[i].floor;
-
-
-    //  if (diff < smallest_diff){
-      //  smallest_diff = diff;
-      //}
-
     }
+
     else if (elevator_movement == HARDWARE_MOVEMENT_DOWN && queue_requests[i].order_type == HARDWARE_ORDER_DOWN
                                                          && queue_requests[i].active
                                                          && queue_requests[i].floor < current_floor){
-
-      if (diff > smallest_diff){
-        smallest_diff = diff;
-      }
+      return queue_requests[i].floor;
 
     }
   }
-  return elevator_current_floor + smallest_diff;
+  return 0;
 }
 
 void queue_add_request(){
@@ -96,7 +83,7 @@ int queue_remove_requests_on_floor(int arrived_floor){
     if (queue_requests[f].floor == arrived_floor){
       for (HardwareOrder order = HARDWARE_ORDER_UP; order < HARDWARE_NUMBER_OF_MOVEMENT_COMMANDS; order++){
         if (queue_requests[f*HARDWARE_NUMBER_OF_FLOORS + order].active) {
-          removed_reqs = 1;
+          removed_reqs += 1;
           queue_requests[f*HARDWARE_NUMBER_OF_FLOORS + order].active = 0;
           printf("removed request (this is inside loop)\n");
         }
