@@ -9,7 +9,7 @@
 #include <time.h>
 
 
-extern time_t timer_last_timeout;
+extern time_t now;
 
 /**
  * @brief Keeps the program busy waiting for @p number_of_ms .
@@ -22,6 +22,5 @@ extern time_t timer_last_timeout;
  * is a @c NULL pointer.
  */
 
-int timer_check_timeout(time_t *start_time, const int timeout);
-
+int timer_check_timeout(time_t start_time, const int timeout);
 #endif // TIMER_H

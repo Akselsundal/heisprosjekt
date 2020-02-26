@@ -49,7 +49,7 @@ void elevator_move_state(state_t *p_now_state){
   
   if (check_new_floor(&elevator_current_floor)){
     if (elevator_current_floor == elevator_next_floor){
-      printf("Current_floor is %i\t", elevator_current_floor);
+      printf("Current_floor is %i\t", elevator_current_floor + 1);
       elevator_movement = HARDWARE_MOVEMENT_STOP;
       //elevator_next_floor = queue_get_next_floor(elevator_current_floor); overflødig?
       transition_state(p_now_state, DOORS_OPEN);
@@ -58,6 +58,47 @@ void elevator_move_state(state_t *p_now_state){
 }
 
 void elevator_doors_open_state(state_t *p_now_state){
+  queue_remove_requests_on_floor(elevator_current_floor);
+  printf("Removed requests\t");
+  time_t now;
+  now = time(NULL);
+  //time(timer_last_timeout);
+
+  while (!timer_check_timeout(now, 3)){
+    queue_add_request();
+
+  }
+
+  if (!queue_active_reqs){
+    transition_state(p_now_state, IDLE);
+    return;
+
+  }
+
+  
+  elevator_next_floor = queue_get_next_floor(elevator_current_floor);
+  printf("The next floor(with doors open: %i\n", elevator_next_floor);
+
+  if (elevator_next_floor > elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_UP;
+    transition_state(p_now_state, MOVE);
+
+  }
+  if (elevator_next_floor < elevator_current_floor){
+    elevator_movement = HARDWARE_MOVEMENT_DOWN;
+    transition_state(p_now_state, MOVE);
+
+  }
+  
+  else { // A request on the same floor the elevator is on
+    return;   // This is uneccessary code, but shows the situation has been thought through.
+  }
+}
+
+
+
+
+  /*
   int removed_requests = queue_remove_requests_on_floor(elevator_current_floor);
 
   time_t timer_last_timeout;
@@ -73,25 +114,29 @@ void elevator_doors_open_state(state_t *p_now_state){
 
   while (!timer_check_timeout(&timer_last_timeout, 3)){
     queue_add_request();
-    elevator_next_floor = queue_get_next_floor(elevator_current_floor);
+    
   }
 
   if (!queue_active_reqs){
     transition_state(p_now_state, IDLE);
   }
-  else if (elevator_next_floor > elevator_current_floor){
-    elevator_movement = HARDWARE_MOVEMENT_UP;
-    transition_state(p_now_state, MOVE);
-  }
-  else if (elevator_next_floor < elevator_current_floor){
-    elevator_movement = HARDWARE_MOVEMENT_DOWN;
-    transition_state(p_now_state, MOVE);
+
+  else if (queue_active_reqs){
+    elevator_next_floor = queue_get_next_floor(elevator_current_floor);
+    if (elevator_next_floor > elevator_current_floor){
+      elevator_movement = HARDWARE_MOVEMENT_UP;
+      transition_state(p_now_state, MOVE);
+    }
+    if (elevator_next_floor < elevator_current_floor){
+      elevator_movement = HARDWARE_MOVEMENT_DOWN;
+      transition_state(p_now_state, MOVE);
+    }
   }
   else { // A request on the same floor the elevator is on
     return;   // This is uneccessary code, but shows the situation has been thought through.
   }
 }
-
+*/
 void elevator_stop_state(state_t *p_now_state){
   // Run code for each state here.
 }

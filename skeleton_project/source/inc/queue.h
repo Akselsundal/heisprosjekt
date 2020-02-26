@@ -37,6 +37,8 @@ int queue_active_reqs;
 void queue_init();
 void print_active_requests_table();
 
+void queue_number_of_active(); //Rekner ut antall aktive
+
 /**
 * @brief A function to find which floor to deal with next.
 * @param[in] current_floor The floor where the elevator currently is situated.
@@ -55,7 +57,7 @@ void queue_add_request();
 *Will set all requests in @p queue_requests on the @p arived_floor to inactive.
 *@param[in] arrived_floor The floor which the elevator just arrived.
 */
-int queue_remove_requests_on_floor();
+void queue_remove_requests_on_floor();
 
 /**
 *@breif A function to remove all @p request in @p queue_requests to inactive.
