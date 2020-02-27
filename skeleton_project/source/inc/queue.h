@@ -30,6 +30,7 @@ request_t queue_requests[NUMBER_OF_POSSIBLE_REQUESTS];
 * Describes the number of active requests in @p queue_requests.
 */
 int queue_active_reqs;
+int elevator_second_next_floor;
 
 /**
 * @brief A function to initiate the queue system: sets number of active to 0 and fills @p queue_requests
@@ -37,7 +38,7 @@ int queue_active_reqs;
 void queue_init();
 void print_active_requests_table();
 
-void queue_number_of_active(); //Rekner ut antall aktive
+int queue_number_of_active(); //Rekner ut antall aktive
 
 /**
 * @brief A function to find which floor to deal with next.
@@ -46,6 +47,8 @@ void queue_number_of_active(); //Rekner ut antall aktive
 * @return -1 if @p queue_active_reqs is zero, otherwise which floor to go to.
 */
 int queue_get_next_floor(int current_floor);
+
+int queue_get_second_next_floor(int next_floor, int elevator_current_floor);
 
 /**
 @breif A function to deal with adding requests.
