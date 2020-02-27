@@ -11,6 +11,14 @@
 #include "timer.h"
 
 
+/*
+Known bugs:
+- Dersom en etasje bestilles like etter at heisen forlot den, kjører heisen uendelig.
+- Dersom stopp trykkes, og en ny bestilling settes på etasjen heisen nettopp var, blir den ikke behandlet.
+*/
+
+
+
 static void parse_argvs(int argc, char **argv);
 static void sigint_handler(int sig);
 
@@ -22,7 +30,7 @@ int main(int argc, char **argv){
   hardware_init();
   queue_init();
 
-  state_t state = BOOT;
+  State state = BOOT;
 
   // Run program continously
   while(1){
