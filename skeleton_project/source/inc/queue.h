@@ -7,7 +7,7 @@
 
 #include "hardware.h"
 
-#define NUMBER_OF_POSSIBLE_REQUESTS HARDWARE_NUMBER_OF_FLOORS * HARDWARE_NUMBER_OF_MOVEMENT_COMMANDS
+#define NUMBER_OF_POSSIBLE_REQUESTS HARDWARE_NUMBER_OF_FLOORS * HARDWARE_N_MOVE_COMMANDS
 /*! \struct Request
 * @brief This struct represents a request.
 */
@@ -51,7 +51,7 @@ int queue_get_second_next_floor(int next_floor, int elevator_current_floor);
 /**
 @breif A function to deal with adding requests.
 */
-void queue_check_requests(int between_floors, int current_floor);
+void queue_check_requests(int current_floor);
 
 /**
 *@breif A function to deal with removing requests that are dealt with.
