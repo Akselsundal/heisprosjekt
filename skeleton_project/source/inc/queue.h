@@ -1,67 +1,57 @@
 /**
 * @file
-* @brief The queue system, handles everything that has to do with the queue.
+* @brief This file contains functions for initializing the queue, adding and removing requests,
+finding the best floor to go to, and flushing the entire queue.
 */
 #ifndef QUEUE_H
 #define QUEUE_H
 
 #include "hardware.h"
 
-#define NUMBER_OF_POSSIBLE_REQUESTS HARDWARE_NUMBER_OF_FLOORS * HARDWARE_N_MOVE_COMMANDS
+#define NUMBER_OF_POSSIBLE_REQUESTS        HARDWARE_NUMBER_OF_FLOORS * HARDWARE_N_MOVE_COMMANDS
+
 /*! \struct Request
 * @brief This struct represents a request.
 */
 typedef struct {
-/*! Int to describe if the request is active */
-  int active;
-/*! Describes which floor the request is on */
-  int floor;
-/*! Describes which type og @p HardwareOrder the request is */
-  HardwareOrder order_type;
+    int active;                 /*! Describes whether the request is active or not */
+    int floor;                  /*! Describes which floor the request is on */
+    HardwareOrder order_type;   /*! Describes which type of @p HardwareOrder the request is */
 } Request;
-
-/** \var queue_requests
-* Array of type @p Request with the size of possible requests, @p NUMBER_OF_POSSIBLE_REQUESTS
-*/
-Request queue_requests[NUMBER_OF_POSSIBLE_REQUESTS];
-
-/** \var queue_active_reqs
-* Describes the number of active requests in @p queue_requests.
-*/
-int queue_active_reqs;
-int elevator_second_next_floor;
 
 /**
 * @brief A function to initiate the queue system: sets number of active to 0 and fills @p queue_requests
+* with inactive requests.
+* @warning There will be 12 elements, but in hardware there are only 10 possible types of requests.
+* The two remaining elements will never be active.
 */
 void queue_init();
 
-int queue_number_of_active(); //Rekner ut antall aktive
+/**
+ * @brief Checks new requests and adds them if they were not already active. Increments @p queue_active_reqs by one
+ * if a new request is added.
+ * @param current_floor The floor the elevator currently is on.
+ */
+void queue_check_and_add_requests(int current_floor);
 
 /**
-* @brief A function to find which floor to deal with next.
-* @param[in] current_floor The floor where the elevator currently is situated.
-* @param[in] State The state of which to elevator is currently in.
+* @brief Removes all active requests on a specified floor. Decrements @p queue_active_reqs by one for each
+* active request was removed on that floor.
+* @param arrived_floor The floor which the elevator just arrived.
+*/
+void queue_remove_requests_on_floor(int arrived_floor);
+
+/**
+* @brief Determines which floor the elevator will go to next.
+* @param current_floor The floor the elevator currently is on.
+* @param direction The general direction of the elevator. This value should never be @p HARDWARE_MOVEMENT_STOP .
 * @return -1 if @p queue_active_reqs is zero, otherwise which floor to go to.
 */
-int queue_get_next_floor(int current_floor, HardwareMovement last_movement);
+int queue_get_next_floor(int current_floor, HardwareMovement direction);
 
-int queue_get_second_next_floor(int next_floor, int elevator_current_floor);
-
-/**
-@breif A function to deal with adding requests.
-*/
-void queue_check_requests(int current_floor);
 
 /**
-*@breif A function to deal with removing requests that are dealt with.
-*Will set all requests in @p queue_requests on the @p arived_floor to inactive.
-*@param[in] arrived_floor The floor which the elevator just arrived.
-*/
-void queue_remove_requests_on_floor();
-
-/**
-*@breif A function to remove all @p request in @p queue_requests to inactive.
+* @brief Removes all active requests and sets @p queue_active_reqs to zero.
 */
 void queue_flush();
 

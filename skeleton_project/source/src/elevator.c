@@ -1,214 +1,215 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
 #include "timer.h"
 #include "elevator.h"
 #include "hardware.h"
 #include "queue.h"
 
-// Local helper functions
-static int transition_state(State *p_now_state, State to_state);
-static void hardware_attempt_doors_open(int door_open);
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-HardwareMovement elevator_movement = HARDWARE_MOVEMENT_UP;
-HardwareMovement elevator_last_movement = HARDWARE_MOVEMENT_UP;
-int elevator_current_floor = -1;  // Initially, unknown floor.
-int elevator_next_floor = -1;     // Initially, none.
-int elevator_between_floors = 0;
+
+
+static char *elevator_state_strings[];
+static HardwareMovement elevator_last_movement = HARDWARE_MOVEMENT_UP;
+static int elevator_current_floor = -1;
+static int elevator_next_floor = -1;
+
+static int check_and_update_new_floor(int *last_floor);
+static int transition_state(State *p_now_state, State to_state);
+static void attempt_doors_open(int door_open);
 
 
 void elevator_boot_state(State *p_now_state){
-  if (hardware_read_stop_signal()) {
-    transition_state(p_now_state, STOP);
-    return;
-  }
+    queue_init();
+    if (hardware_read_stop_signal()) {
+        transition_state(p_now_state, STOP);
+        return;
+    }
 
-  if ((elevator_check_and_update_new_floor(&elevator_current_floor)))
-    transition_state(p_now_state, IDLE);
+    if ((check_and_update_new_floor(&elevator_current_floor)))
+        transition_state(p_now_state, IDLE);
 }
 
 
 void elevator_idle_state(State *p_now_state){
-  if (hardware_read_stop_signal()) {
-    transition_state(p_now_state, STOP);
-    return;
-  }
+    if (hardware_read_stop_signal()) {
+        transition_state(p_now_state, STOP);
+        return;
+    }
 
-  hardware_attempt_doors_open(0);
-  queue_check_requests(elevator_current_floor);
-  elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
+    attempt_doors_open(0);
+    queue_check_and_add_requests(elevator_current_floor);
+    elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
 
-  if (elevator_next_floor == -1) return;    // Do nothing
+    if (elevator_next_floor == -1) return;
 
-  else if (elevator_next_floor > HARDWARE_NUMBER_OF_FLOORS || elevator_next_floor < 0){
-    printf("ERROR: The next floor was out of range.\n");
-    exit(1);
-  }
+    else if (elevator_next_floor > HARDWARE_NUMBER_OF_FLOORS || elevator_next_floor < 0){
+        printf("ERROR: The next floor was out of range.\n");
+        exit(1);
+    }
 
-  else if (hardware_read_obstruction_signal() && hardware_read_floor_sensor(elevator_current_floor)) 
-    transition_state(p_now_state, DOORS_OPEN);
+    else if (hardware_read_obstruction_signal() && hardware_read_floor_sensor(elevator_current_floor)) 
+        transition_state(p_now_state, DOORS_OPEN);
 
-  else if(elevator_current_floor == elevator_next_floor){ // A request on the same floor the elevator is on
-    transition_state(p_now_state, DOORS_OPEN);
-  }
+    else if(elevator_current_floor == elevator_next_floor){
+        transition_state(p_now_state, DOORS_OPEN);
+    }
 
-  else 
-    transition_state(p_now_state, MOVE);
+    else 
+        transition_state(p_now_state, MOVE);
 }
 
 
 void elevator_move_state(State *p_now_state){
-  if (hardware_read_stop_signal()) {
-    transition_state(p_now_state, STOP);
-    return;
-  }
+    if (hardware_read_stop_signal()) {
+        transition_state(p_now_state, STOP);
+        return;
+    }
 
-  hardware_attempt_doors_open(0);
-  queue_check_requests(elevator_current_floor);
-  elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
+    attempt_doors_open(0);
+    queue_check_and_add_requests(elevator_current_floor);
+    elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
 
-  if (elevator_movement == HARDWARE_MOVEMENT_STOP){
-    printf("ERROR: The elevator movement was set to stop in 'move' state.\n");
-    exit(1);
-  }
+    if (g_movement == HARDWARE_MOVEMENT_STOP){
+        printf("ERROR: The elevator movement was set to stop in 'move' state.\n");
+        exit(1);
+    }
 
-  elevator_last_movement = elevator_movement;
+    elevator_last_movement = g_movement;
 
-  if (elevator_check_and_update_new_floor(&elevator_current_floor))
-    if (elevator_current_floor == elevator_next_floor)
-      transition_state(p_now_state, DOORS_OPEN);
+    if (check_and_update_new_floor(&elevator_current_floor))
+        if (elevator_current_floor == elevator_next_floor)
+        transition_state(p_now_state, DOORS_OPEN);
 
 }
 
 
 void elevator_doors_open_state(State *p_now_state){
-  if (hardware_read_stop_signal()) {
-    transition_state(p_now_state, STOP);
-    return;
-  }
-
-  hardware_attempt_doors_open(1);
-  queue_remove_requests_on_floor(elevator_current_floor);
-
-  time_t now;
-  now = time(NULL);
-
-  while(!timer_check_timeout(now, 3)){
-    if (hardware_read_obstruction_signal()){
-      now = time(NULL);   // Keep resetting timer
+    if (hardware_read_stop_signal()) {
+        transition_state(p_now_state, STOP);
+        return;
     }
-    else{
-      if (hardware_read_stop_signal()) break;
-      queue_check_requests(elevator_current_floor);
-      elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
+
+    attempt_doors_open(1);
+    queue_remove_requests_on_floor(elevator_current_floor);
+
+    time_t time_now;
+    time_now = time(NULL);
+
+    while(!timer_check_timeout(time_now, 3)){
+        if (hardware_read_obstruction_signal()){
+            time_now = time(NULL);
+        }
+        else{
+            if (hardware_read_stop_signal()) break;
+
+            queue_check_and_add_requests(elevator_current_floor);
+            elevator_next_floor = queue_get_next_floor(elevator_current_floor, elevator_last_movement);
+        }
     }
-  }
 
-  
-  if (!queue_active_reqs){
-    transition_state(p_now_state, IDLE);
-    return;
-  }
-
-  else if (elevator_next_floor == elevator_current_floor) return;
-  else 
-    transition_state(p_now_state, MOVE);
+    
+    if (queue_get_next_floor(elevator_current_floor, elevator_last_movement) == -1){
+        transition_state(p_now_state, IDLE);
+        return;
+    }
+    else if (elevator_next_floor == elevator_current_floor) return;
+    else transition_state(p_now_state, MOVE);
 }
 
 
 void elevator_stop_state(State *p_now_state){
-  
-  hardware_attempt_doors_open(0);
-  queue_flush();
+    
+    attempt_doors_open(0);
+    queue_flush();
 
-  while(hardware_read_stop_signal()){
-    hardware_command_stop_light(1);
-    hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-    if (hardware_read_floor_sensor(elevator_current_floor)){    // On a floor
-      hardware_attempt_doors_open(1);
+    while(hardware_read_stop_signal()){
+        hardware_command_stop_light(1);
+        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
+        if (hardware_read_floor_sensor(elevator_current_floor)){
+        attempt_doors_open(1);
+        }
     }
-  }
 
-  hardware_command_stop_light(0);
+    hardware_command_stop_light(0);
 
-  time_t prev_time;
-  prev_time = time(NULL);
+    time_t prev_time;
+    prev_time = time(NULL);
 
-  while(!timer_check_timeout(prev_time, 3)){
-    hardware_command_movement(HARDWARE_MOVEMENT_STOP);
-    queue_check_requests(elevator_current_floor);
-  }
+    while(!timer_check_timeout(prev_time, 3)){
+        hardware_command_movement(HARDWARE_MOVEMENT_STOP);
+        queue_check_and_add_requests(elevator_current_floor);
+    }
 
-  elevator_movement = HARDWARE_MOVEMENT_STOP;
+    g_movement = HARDWARE_MOVEMENT_STOP;
 
-  hardware_attempt_doors_open(0);
+    attempt_doors_open(0);
 
-  transition_state(p_now_state, IDLE);
+    transition_state(p_now_state, IDLE);
 }
 
 
-int elevator_check_and_update_new_floor(int *last_floor){
-  for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
-    if (hardware_read_floor_sensor(i) && *last_floor != i) {
-      *last_floor = i;
-      hardware_command_floor_indicator_on(i);
-      return 1;
+static int check_and_update_new_floor(int *last_floor){
+    for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
+        if (hardware_read_floor_sensor(i) && *last_floor != i) {
+            *last_floor = i;
+            hardware_command_floor_indicator_on(i);
+            return 1;
+        }
     }
-  }
-  return 0;
+    return 0;
 }
 
 
 static int transition_state(State *p_now_state, State to_state){
-  if (to_state == IDLE || to_state == DOORS_OPEN || to_state == STOP) elevator_movement = HARDWARE_MOVEMENT_STOP;
+    if (to_state == IDLE || to_state == DOORS_OPEN || to_state == STOP) g_movement = HARDWARE_MOVEMENT_STOP;
 
-  else if (to_state == MOVE && elevator_current_floor < elevator_next_floor) elevator_movement = HARDWARE_MOVEMENT_UP;
+    else if (to_state == MOVE && elevator_current_floor < elevator_next_floor) g_movement = HARDWARE_MOVEMENT_UP;
 
-  else if (to_state == MOVE && elevator_current_floor > elevator_next_floor) elevator_movement = HARDWARE_MOVEMENT_DOWN;
+    else if (to_state == MOVE && elevator_current_floor > elevator_next_floor) g_movement = HARDWARE_MOVEMENT_DOWN;
 
 
-  int trans_from_boot       = *p_now_state == BOOT        && (to_state == IDLE || to_state == STOP);
-  int trans_from_idle       = *p_now_state == IDLE        && (to_state == MOVE || to_state == DOORS_OPEN || to_state == STOP);
-  int trans_from_move       = *p_now_state == MOVE        && (to_state == DOORS_OPEN || to_state == STOP);
-  int trans_from_doors_open = *p_now_state == DOORS_OPEN  && (to_state == IDLE || to_state == MOVE || to_state == STOP);
-  int trans_from_stop       = *p_now_state == STOP        && to_state == IDLE;
+    int trans_from_boot       = *p_now_state == BOOT        && (to_state == IDLE || to_state == STOP);
+    int trans_from_idle       = *p_now_state == IDLE        && (to_state == MOVE || to_state == DOORS_OPEN || to_state == STOP);
+    int trans_from_move       = *p_now_state == MOVE        && (to_state == DOORS_OPEN || to_state == STOP);
+    int trans_from_doors_open = *p_now_state == DOORS_OPEN  && (to_state == IDLE || to_state == MOVE || to_state == STOP);
+    int trans_from_stop       = *p_now_state == STOP        &&  to_state == IDLE;
 
-  if (trans_from_boot || trans_from_idle || trans_from_move || trans_from_doors_open || trans_from_stop){
-    printf("Changing states: %s -> %s\n", elevator_state_strings[*p_now_state], elevator_state_strings[to_state]);
-    *p_now_state = to_state;
-    return 0;
-  }
-  else {
-    printf("Error: Incorrect transitions of states!\n");
-    exit(1);
-  }
-}
-
-static void hardware_attempt_doors_open(int door_open){
-  if (door_open){
-    door_open = 0;
-    for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
-      if(hardware_read_floor_sensor(i)) door_open = 1;
+    if (trans_from_boot || trans_from_idle || trans_from_move || trans_from_doors_open || trans_from_stop){
+        printf("Changing states: %s -> %s\n", elevator_state_strings[*p_now_state], elevator_state_strings[to_state]);
+        *p_now_state = to_state;
+        return 0;
     }
-  }
-  hardware_command_door_open(door_open);
+    else {
+        printf("Error: Incorrect transitions of states!\n");
+        exit(1);
+    }
+}
+
+static void attempt_doors_open(int door_open){
+    if (door_open){
+        door_open = 0;
+        for (int i = 0; i < HARDWARE_NUMBER_OF_FLOORS; i++){
+            if(hardware_read_floor_sensor(i)) door_open = 1;
+        }
+    }
+    hardware_command_door_open(door_open);
 }
 
 
-void (*elevator_state_functions[NUMBER_OF_STATES])(State *p_now_state) = {
-  elevator_boot_state,
-  elevator_idle_state,
-  elevator_move_state,
-  elevator_doors_open_state,
-  elevator_stop_state,
+void (*g_state_functions[NUMBER_OF_STATES])(State *p_now_state) = {
+    elevator_boot_state,
+    elevator_idle_state,
+    elevator_move_state,
+    elevator_doors_open_state,
+    elevator_stop_state,
 };
 
 
-char *elevator_state_strings[] = {
-  "BOOT",
-  "IDLE",
-  "MOVE",
-  "DOORS OPEN",
-  "STOP",
+static char *elevator_state_strings[] = {
+    "BOOT",
+    "IDLE",
+    "MOVE",
+    "DOORS OPEN",
+    "STOP",
 };

@@ -1,6 +1,6 @@
 /**
  * @file
- * @brief Time module for delay and timeout functions.
+ * @brief Time module for timeout function.
  */
 
 #ifndef TIMER_H
@@ -8,19 +8,13 @@
 
 #include <time.h>
 
-
-extern time_t now;
-
 /**
- * @brief Keeps the program busy waiting for @p number_of_ms .
- *
- * @param[in] p_from    Source buffer.
- * @param[out] p_to     Destination buffer.
- * @param[in] size      Number of integers in the buffer.
- *
- * @return 0 on success, 1 if either @p p_from or @p p_to
- * is a @c NULL pointer.
+ * @brief Checks if a timeout has occured.
+ * @param start_time The time at which the function is first called.
+ * @param timeout The number of seconds from when the function is first called to when it
+ * returns 1.
+ * @return 1 if timeout has occuerd, 0 otherwise.
  */
-
 int timer_check_timeout(time_t start_time, const int timeout);
+
 #endif // TIMER_H
