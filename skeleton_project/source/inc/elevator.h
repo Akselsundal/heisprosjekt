@@ -16,19 +16,10 @@
 typedef enum {
     BOOT,       /*!< The state of the elevator at boot */
     IDLE,       /*!< The state when there are no requests */
-    MOVE,       /*< The elevator is moving */
+    MOVE,       /*!< The elevator is moving */
     DOORS_OPEN, /*!< The elevator doors are open */
     STOP,       /*!< Stop is active */
-    ERROR,      /*!< State to handle errors */
 } State;
-
-/** @brief Function pointer array of five elements, which returns nothing and takes in a pointer
- * to the finite state machine's state.
- */
-void (*g_state_functions[NUMBER_OF_STATES])(State *p_now_state);
-
-/** @brief Stores the movement of the elevator. */
-HardwareMovement g_movement;
 
 /**
  * @brief Contains everything that will happen in the @p BOOT state.

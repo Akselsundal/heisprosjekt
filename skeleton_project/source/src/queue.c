@@ -7,7 +7,7 @@
 
 
 static Request queue_requests[NUMBER_OF_POSSIBLE_REQUESTS];
-static int queue_active_reqs = 0;
+static int queue_active_requests = 0;
 
 static int check_active_request_on_floor(int floor);
 
@@ -32,7 +32,7 @@ void queue_check_and_add_requests(int current_floor){
             if (hardware_read_order(f, order) && !queue_requests[f * HARDWARE_N_MOVE_COMMANDS + order].active){
                 queue_requests[f * HARDWARE_N_MOVE_COMMANDS + order].active = 1;
                 hardware_command_order_light(f, order, 1);
-                queue_active_reqs++;
+                queue_active_requests++;
             }
         }
     }
@@ -44,17 +44,16 @@ void queue_remove_requests_on_floor(int arrived_floor){
         if (queue_requests[arrived_floor * HARDWARE_N_MOVE_COMMANDS + order].active){
             queue_requests[arrived_floor * HARDWARE_N_MOVE_COMMANDS + order].active = 0;
             hardware_command_order_light(arrived_floor, order, 0);
-            queue_active_reqs--;
+            queue_active_requests--;
         }  
     }
 }
 
 
 int queue_get_next_floor(int current_floor, HardwareMovement direction){
-    if (!queue_active_reqs) return -1;
+    if (!queue_active_requests) return -1;
 
-    // If only active one element, return its floor
-    if (queue_active_reqs == 1)
+    if (queue_active_requests == 1)
         for (int i = 0; i < NUMBER_OF_POSSIBLE_REQUESTS; i++)
             if (queue_requests[i].active) return i / HARDWARE_N_MOVE_COMMANDS;
 

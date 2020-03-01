@@ -3,7 +3,7 @@ INC_DIR := source/inc
 HW_INC_DIR := source/driver
 BUILD_DIR := build
 
-SOURCES := main.c elevator.c queue.c timer.c example.c
+SOURCES := main.c elevator.c queue.c timer.c
 
 OBJ := $(addprefix $(BUILD_DIR)/, $(SOURCES:%.c=%.o))
 
